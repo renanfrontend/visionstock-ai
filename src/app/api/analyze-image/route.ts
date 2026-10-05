@@ -5,7 +5,7 @@ import {
   type AnalyzeImageErrorCode,
   type AnalyzeImageResponse,
 } from "@/core/catalog/analyze-image.contract";
-import { AnthropicVisionAdapter } from "@/server/catalog/anthropic-vision.adapter";
+import { AnthropicVisionAdapter, DEFAULT_VISION_MODEL } from "@/server/catalog/anthropic-vision.adapter";
 import { analyzeProductImage, InvalidModelOutputError } from "@/server/catalog/analyze-product-image";
 import { CATALOG_SYSTEM_PROMPT } from "@/server/catalog/catalog-prompt";
 
@@ -26,6 +26,32 @@ function describeMissingKey(raw: string | undefined) {
   const related = Object.keys(process.env).filter((name) => name.includes("ANTHROPIC"));
   console.error("[analyze-image] missing api key", { env, defined: raw !== undefined, related });
   return `ANTHROPIC_API_KEY ${state} no ambiente "${env}".`;
+}
+
+/** Maps provider failures to actionable messages. Never echoes credentials. */
+function describeProviderError(error: InstanceType<typeof Anthropic.APIError>): { status: number; message: string } {
+  const detail = error.message.toLowerCase();
+  const model = process.env.ANTHROPIC_MODEL?.trim() || DEFAULT_VISION_MODEL;
+
+  if (error.status === 401) {
+    return { status: 502, message: "A ANTHROPIC_API_KEY foi recusada: chave inválida ou revogada. Gere uma nova no console da Anthropic." };
+  }
+  if (error.status === 403) {
+    return { status: 502, message: "A chave não tem permissão para este recurso. Verifique o workspace da chave no console da Anthropic." };
+  }
+  if (error.status === 404 || detail.includes("model")) {
+    return { status: 502, message: `O modelo "${model}" não está disponível para esta conta. Ajuste a variável ANTHROPIC_MODEL.` };
+  }
+  if (detail.includes("credit balance")) {
+    return { status: 502, message: "A conta da Anthropic está sem créditos. Adicione saldo em Billing no console e tente de novo." };
+  }
+  if (error.status === 429) {
+    return { status: 429, message: "Limite de requisições atingido. Aguarde alguns segundos e tente de novo." };
+  }
+  if (error.status === 529 || (error.status ?? 0) >= 500) {
+    return { status: 503, message: "O serviço de visão está sobrecarregado no momento. Tente de novo em instantes." };
+  }
+  return { status: 502, message: `O serviço de visão recusou a requisição (HTTP ${error.status ?? "?"}).` };
 }
 
 export async function POST(request: Request) {
@@ -75,11 +101,7 @@ export async function POST(request: Request) {
     }
     if (error instanceof Anthropic.APIError) {
       console.error("[analyze-image] anthropic error", { status: error.status, message: error.message });
-      const status = error.status === 429 ? 429 : 502;
-      const message =
-        error.status === 429
-          ? "Limite de requisições atingido. Aguarde alguns segundos e tente de novo."
-          : "O serviço de visão não respondeu como esperado. Tente novamente.";
+      const { status, message } = describeProviderError(error);
       return fail(status, "MODEL_ERROR", message);
     }
     console.error("[analyze-image] unexpected error", error);
