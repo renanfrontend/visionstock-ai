@@ -4,5 +4,16 @@ export const CATALOG_SYSTEM_PROMPT =
   "Retorne APENAS um objeto JSON válido com as chaves: 'title', 'description', 'category', " +
   "'colors' (array) e 'seoTags' (array com 5 palavras).";
 
-export const CATALOG_USER_INSTRUCTION =
-  "Gere o cadastro do produto desta imagem em português do Brasil. Responda somente com o JSON, sem markdown.";
+const OUTPUT_RULES = "Escreva em português do Brasil. Responda somente com o JSON, sem markdown.";
+
+/** Frames from a short video show the same product from several angles. */
+export function catalogInstruction(source: "photo" | "video", imageCount: number): string {
+  if (source === "video" && imageCount > 1) {
+    return (
+      `As ${imageCount} imagens são quadros de um vídeo curto do MESMO produto, em ângulos diferentes. ` +
+      "Combine os detalhes visíveis em todos os quadros e gere um único cadastro. " +
+      OUTPUT_RULES
+    );
+  }
+  return `Gere o cadastro do produto desta imagem. ${OUTPUT_RULES}`;
+}

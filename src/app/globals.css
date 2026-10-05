@@ -1,12 +1,14 @@
 @import "tailwindcss";
 
 /*
- * VisionStock design tokens
- * void   — page background, deep ink with a blue cast
- * hull   — raised glass surfaces
- * ice    — primary neon: idle, focus, success
- * iris   — processing state (the model is "thinking")
- * ember  — errors
+ * VisionStock tokens: a dark control room around a bright scale model.
+ * void    page background, deep ink with a blue cast
+ * hull    raised glass surfaces
+ * ice     primary accent: focus, valid targets, success
+ * iris    AI activity and "in motion" states
+ * amber   attention: low stock, gates not yet met
+ * ember   errors and destructive actions
+ * model   the bright 3D scale model backdrop
  */
 @theme {
   --color-void: #04050c;
@@ -15,18 +17,30 @@
   --color-ice: #6ee7f9;
   --color-ice-dim: #2b7f8f;
   --color-iris: #8b7cf6;
+  --color-amber: #f5b85c;
   --color-ember: #fb7185;
+  --color-mint: #6ee7b7;
   --color-ink: #e7eaf6;
-  --color-ink-muted: #8a91b1;
-  --color-ink-faint: #555b7a;
+  --color-ink-muted: #8f96b6;
+  --color-ink-faint: #5b6182;
   --color-line: rgb(148 163 255 / 0.12);
+  --color-model: #e6edf7;
 
   --font-display: "Unbounded Variable", ui-sans-serif, system-ui;
   --font-sans: "Manrope Variable", ui-sans-serif, system-ui;
   --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
 
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
   --animate-scan: scan 1.6s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
   --animate-shimmer: shimmer 1.4s linear infinite;
+  --animate-shake: shake 0.42s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  --animate-pop: pop 0.38s var(--ease-spring) both;
+  --animate-bump: bump 0.5s var(--ease-spring);
+  --animate-rec: rec 1s steps(2, jump-none) infinite;
+  --animate-march: march 0.9s linear infinite;
+  --animate-float: float 3.2s ease-in-out infinite;
 
   @keyframes scan {
     from { transform: translateY(0%); }
@@ -36,11 +50,36 @@
     from { background-position: -200% 0; }
     to { background-position: 200% 0; }
   }
+  @keyframes shake {
+    10%, 90% { transform: translateX(-2px); }
+    20%, 80% { transform: translateX(4px); }
+    30%, 50%, 70% { transform: translateX(-7px); }
+    40%, 60% { transform: translateX(7px); }
+  }
+  @keyframes pop {
+    0% { transform: scale(0.86); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  @keyframes bump {
+    0% { transform: scale(1); }
+    35% { transform: scale(1.35); }
+    100% { transform: scale(1); }
+  }
+  @keyframes rec {
+    0% { opacity: 1; }
+    100% { opacity: 0.25; }
+  }
+  @keyframes march {
+    to { background-position: 24px 0, -24px 100%, 0 -24px, 100% 24px; }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
 }
 
 @utility glass {
-  background:
-    linear-gradient(160deg, rgb(34 41 82 / 0.5), rgb(9 11 26 / 0.62)) padding-box;
+  background: linear-gradient(160deg, rgb(34 41 82 / 0.5), rgb(9 11 26 / 0.66)) padding-box;
   backdrop-filter: blur(20px) saturate(150%);
   -webkit-backdrop-filter: blur(20px) saturate(150%);
   border: 1px solid var(--color-line);
@@ -51,12 +90,12 @@
 
 @utility field {
   width: 100%;
-  border-radius: 0.75rem;
+  border-radius: 0.7rem;
   border: 1px solid var(--color-line);
   background: rgb(6 8 20 / 0.6);
-  padding: 0.7rem 0.9rem;
+  padding: 0.62rem 0.85rem;
   color: var(--color-ink);
-  font-size: 0.95rem;
+  font-size: 0.94rem;
   line-height: 1.5;
   transition:
     border-color 160ms ease,
@@ -80,17 +119,46 @@
     cursor: not-allowed;
     opacity: 0.55;
   }
+  &[aria-invalid="true"] {
+    border-color: rgb(251 113 133 / 0.65);
+  }
 }
 
 @utility skeleton {
-  background: linear-gradient(
-    90deg,
-    rgb(139 124 246 / 0.06) 0%,
-    rgb(139 124 246 / 0.22) 50%,
-    rgb(139 124 246 / 0.06) 100%
-  );
+  background: linear-gradient(90deg, rgb(139 124 246 / 0.06) 0%, rgb(139 124 246 / 0.22) 50%, rgb(139 124 246 / 0.06) 100%);
   background-size: 200% 100%;
   animation: var(--animate-shimmer);
+}
+
+/* Animated dashed outline: marks a valid drop target while something is being dragged. */
+@utility marching {
+  background-image:
+    linear-gradient(90deg, var(--march-color, var(--color-ice)) 50%, transparent 50%),
+    linear-gradient(90deg, var(--march-color, var(--color-ice)) 50%, transparent 50%),
+    linear-gradient(0deg, var(--march-color, var(--color-ice)) 50%, transparent 50%),
+    linear-gradient(0deg, var(--march-color, var(--color-ice)) 50%, transparent 50%);
+  background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+  background-size: 12px 1.5px, 12px 1.5px, 1.5px 12px, 1.5px 12px;
+  background-position: 0 0, 0 100%, 0 0, 100% 0;
+  animation: var(--animate-march);
+}
+
+/* Sheen that sweeps across primary actions on hover. */
+@utility sheen {
+  position: relative;
+  overflow: hidden;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 35%, rgb(255 255 255 / 0.22) 50%, transparent 65%);
+    transform: translateX(-120%);
+    transition: transform 0.7s var(--ease-out-expo);
+    pointer-events: none;
+  }
+  &:hover::after {
+    transform: translateX(120%);
+  }
 }
 
 :root {
@@ -104,15 +172,14 @@ html {
 body {
   min-height: 100dvh;
   background:
-    radial-gradient(60rem 40rem at 18% 22%, rgb(139 124 246 / 0.12), transparent 60%),
-    radial-gradient(50rem 36rem at 85% 70%, rgb(110 231 249 / 0.07), transparent 60%),
+    radial-gradient(60rem 40rem at 12% 8%, rgb(139 124 246 / 0.1), transparent 60%),
+    radial-gradient(50rem 36rem at 88% 85%, rgb(110 231 249 / 0.06), transparent 60%),
     var(--color-void);
   color: var(--color-ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
 }
 
-/* Fine blueprint grid behind everything, fading toward the edges. */
 body::before {
   content: "";
   position: fixed;
@@ -120,10 +187,10 @@ body::before {
   z-index: -1;
   pointer-events: none;
   background-image:
-    linear-gradient(rgb(148 163 255 / 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(148 163 255 / 0.05) 1px, transparent 1px);
+    linear-gradient(rgb(148 163 255 / 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(148 163 255 / 0.045) 1px, transparent 1px);
   background-size: 44px 44px;
-  mask-image: radial-gradient(ellipse at 40% 35%, black 20%, transparent 75%);
+  mask-image: radial-gradient(ellipse at 40% 30%, black 15%, transparent 75%);
 }
 
 ::selection {
@@ -135,6 +202,56 @@ body::before {
   outline-offset: 3px;
 }
 
+/* Native <dialog> backdrop for the camera. */
+dialog::backdrop {
+  background: rgb(2 3 10 / 0.72);
+  backdrop-filter: blur(6px);
+}
+
+/* Odometer digits roll vertically when a number changes. */
+.odometer-digit {
+  display: inline-block;
+  height: 1em;
+  overflow: hidden;
+  line-height: 1;
+  vertical-align: -0.12em;
+}
+.odometer-digit > span {
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.7s var(--ease-out-expo);
+}
+
+/* Storefront cards: pointer-driven tilt plus a flip to the back face. */
+.tilt-card {
+  transform-style: preserve-3d;
+  transform: perspective(900px) rotateX(var(--tilt-x, 0deg)) rotateY(calc(var(--tilt-y, 0deg) + var(--flip, 0deg)));
+  transition: transform 0.5s var(--ease-out-expo);
+}
+.tilt-card[data-flipped="true"] {
+  --flip: 180deg;
+}
+.tilt-card .face {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.tilt-card .face-back {
+  transform: rotateY(180deg);
+}
+.tilt-glare {
+  background: radial-gradient(circle at var(--glare-x, 50%) var(--glare-y, 0%), rgb(255 255 255 / 0.18), transparent 55%);
+}
+
+/* Countdown ring while recording video: stroke drains over the clip limit. */
+.countdown-ring circle.progress {
+  stroke-dasharray: 289;
+  animation: countdown var(--clip-duration, 10s) linear forwards;
+}
+@keyframes countdown {
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: 289; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -143,4 +260,17 @@ body::before {
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
   }
+  .countdown-ring circle.progress {
+    animation-duration: var(--clip-duration, 10s) !important;
+  }
+}
+
+/* Fields just filled by the vision model glow once in the AI color. */
+.ai-filled {
+  animation: ai-filled 1.8s var(--ease-out-expo) both;
+}
+@keyframes ai-filled {
+  0% { box-shadow: 0 0 0 0 rgb(139 124 246 / 0); background: rgb(139 124 246 / 0); }
+  20% { box-shadow: 0 0 0 6px rgb(139 124 246 / 0.22), 0 0 30px -4px rgb(139 124 246 / 0.6); background: rgb(139 124 246 / 0.08); }
+  100% { box-shadow: 0 0 0 10px rgb(139 124 246 / 0); background: rgb(139 124 246 / 0); }
 }

@@ -88,7 +88,7 @@ export class AnthropicVisionAdapter implements VisionModel {
     this.maxTokens = maxTokens;
   }
 
-  async describe({ base64, mediaType, instruction }: VisionModelInput): Promise<VisionModelOutput> {
+  async describe({ images, instruction }: VisionModelInput): Promise<VisionModelOutput> {
     try {
       const message = await this.client.messages.create({
         model: this.model,
@@ -98,7 +98,10 @@ export class AnthropicVisionAdapter implements VisionModel {
           {
             role: "user",
             content: [
-              { type: "image", source: { type: "base64", media_type: mediaType, data: base64 } },
+              ...images.map((image) => ({
+                type: "image" as const,
+                source: { type: "base64" as const, media_type: image.mediaType, data: image.data },
+              })),
               { type: "text", text: instruction },
             ],
           },

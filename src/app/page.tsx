@@ -1,5 +1,5 @@
-import { CatalogWorkbench } from "@/features/catalog/CatalogWorkbench";
+import { ClientApp } from "@/features/app/ClientApp";
 
 export default function Home() {
-  return <CatalogWorkbench />;
+  return <ClientApp />;
 }

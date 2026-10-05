@@ -138,7 +138,7 @@ export class GeminiVisionAdapter implements VisionModel {
 
   private async request(
     model: string,
-    { base64, mediaType, instruction }: VisionModelInput,
+    { images, instruction }: VisionModelInput,
     timeoutMs: number,
   ): Promise<VisionModelOutput> {
     const response = await fetch(`${API_BASE}/models/${encodeURIComponent(model)}:generateContent`, {
@@ -150,7 +150,10 @@ export class GeminiVisionAdapter implements VisionModel {
         contents: [
           {
             role: "user",
-            parts: [{ inlineData: { mimeType: mediaType, data: base64 } }, { text: instruction }],
+            parts: [
+              ...images.map((image) => ({ inlineData: { mimeType: image.mediaType, data: image.data } })),
+              { text: instruction },
+            ],
           },
         ],
         generationConfig: {

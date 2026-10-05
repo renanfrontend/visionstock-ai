@@ -1,103 +1,88 @@
-# VisionStock AI
+# VisionStock
 
 **Demo:** https://visionstock-ai-nine.vercel.app
 
-Prova de conceito de **AutoCatálogo Inteligente**: envie a foto de um produto e receba título, descrição, categoria, cores e tags de SEO prontos para revisão, gerados por um LLM multimodal.
+Prova de conceito de um sistema de catálogo para e-commerce: da foto (ou de um vídeo curto) do produto até o estoque endereçado, a vitrine publicada e os relatórios em XML. A IA preenche o cadastro; a interface transforma o resto do fluxo em algo direto e interativo.
+
+## O que dá para fazer
+
+| Aba | Fluxo |
+| --- | --- |
+| **Cadastro** | Envie foto, cole com Ctrl+V, abra a **câmera** ou grave/envie um **vídeo de até 10 s**. O modelo de visão preenche título, descrição, categoria, cores e tags; você completa SKU (gerado automaticamente), marca, EAN (validado pelo dígito verificador), preço, custo, estoque e peso. Um medidor de qualidade mostra o que falta. |
+| **Armazém 3D** | Maquete com 3 ruas × 3 níveis × 4 posições. **Arraste o produto da fila até uma prateleira**: a cena indica em tempo real se o endereço aceita (verde) ou não (vermelho) e as caixas caem no lugar. Camada de calor por situação de estoque, entradas, saídas e ajustes com histórico. |
+| **Vitrine** | Quadro Rascunho → Pronto → Publicado com arrastar e soltar. Cada etapa tem requisitos (qualidade ≥ 70% e preço; estoque e endereço) e o card mostra o que falta. Prévia da loja virtual com cards em 3D que inclinam e viram. |
+| **Relatórios** | Indicadores, tabela com busca/filtros/ordenação e exportação em **XML de inventário**, **feed XML no padrão Google Merchant**, **CSV** (pt-BR) e **backup JSON** com restauração. |
+
+Atalhos: `1`–`4` trocam de aba; no armazém, `H` liga a camada de estoque, `R` recentra a câmera e `Esc` limpa a seleção. Tudo também funciona sem arrastar (toque/teclado).
 
 ## Stack
 
-- **Next.js 16** (App Router) + **React 19** + **TypeScript** estrito
-- **Tailwind CSS v4** com design tokens em `@theme`
-- **@react-three/fiber** + **@react-three/drei** para a cena WebGL
-- **framer-motion** para transições de estado
-- **Gemini API** (REST) ou **@anthropic-ai/sdk** para visão computacional
-- **zod** para validar o contrato de entrada e a saída do modelo
+Next.js 16 (App Router) · React 19 · TypeScript estrito · Tailwind CSS v4 · React Three Fiber + drei · Framer Motion · zod · Vitest. Visão computacional via **Gemini API** (REST, camada gratuita) ou **Anthropic SDK**.
 
 ## Arquitetura
 
 ```
 src/
-├── app/
-│   ├── api/analyze-image/route.ts   # Adapter HTTP: valida payload, mapeia erros
-│   ├── layout.tsx / page.tsx
-│   └── globals.css                  # Tokens, glass, field, skeleton
-├── core/catalog/                    # Domínio + contratos (compartilhado client/server)
-│   ├── product-draft.ts             # ProductDraftSchema
-│   └── analyze-image.contract.ts    # Request/Response tipados
-├── server/catalog/
-│   ├── vision-model.port.ts         # Porta + VisionProviderError (erro agnóstico de provedor)
-│   ├── create-vision-model.ts       # Composition root: escolhe o provedor pelo ambiente
-│   ├── gemini-vision.adapter.ts     # Gemini via REST (sem SDK)
-│   ├── anthropic-vision.adapter.ts  # Anthropic via SDK oficial
-│   ├── analyze-product-image.ts     # Use case: imagem → ProductDraft validado
-│   └── catalog-prompt.ts            # System prompt
-├── components/
-│   ├── three/                       # Cena 3D isolada (carregada via dynamic, ssr: false)
-│   └── ui/
-└── features/catalog/
-    ├── CatalogWorkbench.tsx
-    ├── hooks/use-image-analysis.ts  # Máquina de estados (useReducer + AbortController)
-    ├── lib/prepare-image.ts         # Downscale para 1568px no browser antes do upload
-    └── components/                  # Dropzone, painel, chips, status
+├── core/                      # Domínio puro, sem React nem I/O (testado)
+│   ├── catalog/               # Produto, SKU, EAN/GTIN, qualidade, regras de etapa, contrato da API
+│   ├── inventory/             # Endereços do armazém, capacidade, movimentações de estoque
+│   ├── reports/               # Resumo, XML de inventário, feed Merchant, CSV
+│   └── shared/                # Dinheiro em centavos, texto
+├── application/catalog/       # Casos de uso como comandos puros: (estado, comando) → estado + aviso
+│   ├── commands.ts            # criar, editar, endereçar, movimentar, publicar, canais…
+│   ├── catalog-store.ts       # Store agnóstico de framework (useSyncExternalStore)
+│   └── catalog-repository.ts  # Porta de persistência
+├── infrastructure/            # Adapter localStorage com validação por schema
+├── server/catalog/            # Porta VisionModel + adapters Gemini e Anthropic
+├── app/api/analyze-image/     # Rota HTTP fina: valida, chama o caso de uso, mapeia erros
+└── features/                  # UI por contexto: register, media, warehouse, storefront, reports
 ```
 
-Decisões relevantes:
+Decisões que valem a leitura:
 
-- **Porta/adapter para o modelo de visão**: o use case não conhece nenhum fornecedor. Gemini e Anthropic são dois adapters da mesma porta, e cada um traduz seus erros para `VisionProviderError`, então a rota HTTP nunca importa SDK de fornecedor.
-- **Saída do LLM tratada como input não confiável**: extração tolerante do JSON + validação com zod antes de chegar ao client (`502 INVALID_MODEL_OUTPUT` quando o contrato é violado).
-- **Imagem pré-processada no client**: reduz o payload para centenas de KB, abaixo do limite de 4,5 MB do body em funções serverless.
-- **Cena 3D fora do bundle inicial** e com `frameloop="never"` quando sai da viewport. Transições usam damping por frame, independente de FPS. Respeita `prefers-reduced-motion`.
+- **Vídeo vira quadros no navegador.** O clipe é limitado a 10 s, quatro quadros espaçados são extraídos via canvas e o mais nítido (variância do Laplaciano) vira a capa. O modelo recebe os quadros como ângulos do mesmo produto: funciona com qualquer provedor multimodal e cabe no limite de 4,5 MB das funções serverless.
+- **Comandos puros com avisos.** Cada ação devolve o novo estado e uma mensagem (`sucesso`, `info`, `erro`) com o motivo. A interface só reage: toasts, tremor no card, flash vermelho na prateleira.
+- **Regras de negócio no domínio.** Um SKU por endereço, capacidade por posição, saldo nunca negativo, publicação exige estoque e endereço, produto esgotado sai da vitrine. Tudo testado sem renderizar nada.
+- **Arrastar e soltar do DOM para o 3D.** O drop HTML5 é convertido em raycast na câmera da cena para achar o endereço sob o cursor.
+- **Persistência atrás de uma porta.** A demo salva no navegador; trocar por uma API é escrever outro adapter de `CatalogRepository`.
+- **Saída do LLM é entrada não confiável.** JSON extraído com tolerância e validado com zod antes de chegar à tela.
 
 ## Rodando localmente
 
 ```bash
-cp .env.example .env.local   # preencha ANTHROPIC_API_KEY
+cp .env.example .env.local   # preencha GEMINI_API_KEY (gratuita) ou ANTHROPIC_API_KEY
 npm install
 npm run dev
 ```
 
-O provedor de visão é plugável. Configure **um** deles:
+| Script | |
+| --- | --- |
+| `npm test` | Testes de domínio e aplicação (Vitest) |
+| `npm run typecheck` | TypeScript estrito |
+| `npm run lint` | ESLint |
+| `npm run build` | Build de produção |
 
-| Variável                 | Quando usar                                   | Padrão              |
-| ------------------------ | --------------------------------------------- | ------------------- |
-| `GEMINI_API_KEY`         | Gemini (tem camada gratuita no AI Studio)     | —                   |
-| `GEMINI_MODEL`           | opcional                                      | `gemini-3.6-flash`  |
-| `ANTHROPIC_API_KEY`      | Anthropic                                     | —                   |
-| `ANTHROPIC_WORKSPACE_ID` | só para chaves sem workspace                  | —                   |
-| `ANTHROPIC_MODEL`        | opcional                                      | `claude-sonnet-5-5` |
-| `VISION_PROVIDER`        | força `gemini` ou `anthropic`                 | auto                |
+### Variáveis de ambiente
 
-Sem `VISION_PROVIDER`, o Gemini é usado quando `GEMINI_API_KEY` existe; caso contrário, a Anthropic.
-
-> O Claude 3.5 Sonnet foi aposentado pela Anthropic; por isso o padrão aponta para o Sonnet atual.
+| Variável                 | Quando usar                               | Padrão              |
+| ------------------------ | ----------------------------------------- | ------------------- |
+| `GEMINI_API_KEY`         | Gemini (camada gratuita no AI Studio)     | —                   |
+| `GEMINI_MODEL`           | opcional                                  | `gemini-3.6-flash`  |
+| `ANTHROPIC_API_KEY`      | Anthropic                                 | —                   |
+| `ANTHROPIC_WORKSPACE_ID` | só para chaves sem workspace              | —                   |
+| `ANTHROPIC_MODEL`        | opcional                                  | `claude-sonnet-5-5` |
+| `VISION_PROVIDER`        | força `gemini` ou `anthropic`             | automático          |
 
 ## API
 
 `POST /api/analyze-image`
 
 ```json
-{ "image": "<base64 sem prefixo data:>", "mediaType": "image/jpeg" }
+{ "images": [{ "data": "<base64>", "mediaType": "image/jpeg" }], "source": "photo" }
 ```
 
-Resposta de sucesso:
+`images` aceita de 1 a 4 itens (`source: "video"` para quadros de vídeo). A resposta traz `title`, `description`, `category`, `colors` e `seoTags`, além de modelo, latência e tokens.
 
-```json
-{
-  "ok": true,
-  "data": {
-    "title": "Caneca de cerâmica Alpha azul-marinho 350 ml",
-    "description": "Caneca de cerâmica esmaltada com faixa dourada...",
-    "category": "Casa e Cozinha > Canecas",
-    "colors": ["Azul-marinho", "Dourado"],
-    "seoTags": ["caneca", "ceramica", "cafe", "azul-marinho", "presente"]
-  },
-  "meta": { "model": "claude-sonnet-5-5", "latencyMs": 3240, "inputTokens": 1612, "outputTokens": 187 }
-}
-```
+---
 
-## Deploy
-
-```bash
-npx vercel --prod --yes
-npx vercel env add GEMINI_API_KEY production   # ou ANTHROPIC_API_KEY
-```
+Dados fictícios. Projeto de portfólio.
