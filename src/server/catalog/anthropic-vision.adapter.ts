@@ -9,6 +9,8 @@ export const DEFAULT_VISION_MODEL = "claude-sonnet-5-5";
 
 interface AnthropicVisionAdapterOptions {
   apiKey: string;
+  /** Required by the API when the key is not scoped to a workspace. */
+  workspaceId?: string;
   model?: string;
   systemPrompt: string;
   maxTokens?: number;
@@ -20,9 +22,14 @@ export class AnthropicVisionAdapter implements VisionModel {
   private readonly systemPrompt: string;
   private readonly maxTokens: number;
 
-  constructor({ apiKey, model, systemPrompt, maxTokens = 1024 }: AnthropicVisionAdapterOptions) {
-    this.client = new Anthropic({ apiKey, maxRetries: 2, timeout: 45_000 });
-    this.model = model ?? DEFAULT_VISION_MODEL;
+  constructor({ apiKey, workspaceId, model, systemPrompt, maxTokens = 1024 }: AnthropicVisionAdapterOptions) {
+    this.client = new Anthropic({
+      apiKey,
+      maxRetries: 2,
+      timeout: 45_000,
+      defaultHeaders: workspaceId ? { "anthropic-workspace-id": workspaceId } : undefined,
+    });
+    this.model = model || DEFAULT_VISION_MODEL;
     this.systemPrompt = systemPrompt;
     this.maxTokens = maxTokens;
   }

@@ -39,6 +39,13 @@ function describeProviderError(error: InstanceType<typeof Anthropic.APIError>): 
   if (error.status === 403) {
     return { status: 502, message: "A chave não tem permissão para este recurso. Verifique o workspace da chave no console da Anthropic." };
   }
+  if (detail.includes("anthropic-workspace-id")) {
+    return {
+      status: 502,
+      message:
+        "A chave não está vinculada a um workspace. Defina ANTHROPIC_WORKSPACE_ID na Vercel ou gere uma chave dentro de um workspace.",
+    };
+  }
   if (error.status === 404 || detail.includes("model")) {
     return { status: 502, message: `O modelo "${model}" não está disponível para esta conta. Ajuste a variável ANTHROPIC_MODEL.` };
   }
@@ -92,7 +99,8 @@ export async function POST(request: Request) {
   try {
     const visionModel = new AnthropicVisionAdapter({
       apiKey,
-      model: process.env.ANTHROPIC_MODEL,
+      workspaceId: process.env.ANTHROPIC_WORKSPACE_ID?.trim() || undefined,
+      model: process.env.ANTHROPIC_MODEL?.trim() || undefined,
       systemPrompt: CATALOG_SYSTEM_PROMPT,
     });
     const result = await analyzeProductImage(visionModel, parsed.data);

@@ -58,6 +58,7 @@ npm run dev
 | ------------------- | ----------- | ------------------- |
 | `ANTHROPIC_API_KEY` | sim         | —                   |
 | `ANTHROPIC_MODEL`   | não         | `claude-sonnet-5-5` |
+| `ANTHROPIC_WORKSPACE_ID` | só para chaves sem workspace | — |
 
 > O Claude 3.5 Sonnet foi aposentado pela Anthropic; por isso o padrão aponta para o Sonnet atual. Qualquer modelo com visão pode ser fixado via `ANTHROPIC_MODEL`.
 
