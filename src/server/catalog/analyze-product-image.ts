@@ -1,6 +1,6 @@
 import type { AnalyzeImageRequest } from "@/core/catalog/analyze-image.contract";
 import { ProductDraftSchema, SEO_TAG_COUNT, type ProductDraft } from "@/core/catalog/product-draft";
-import { CATALOG_USER_INSTRUCTION } from "./catalog-prompt";
+import { catalogInstruction } from "./catalog-prompt";
 import type { VisionModel } from "./vision-model.port";
 
 export class InvalidModelOutputError extends Error {
@@ -40,15 +40,14 @@ function normalize(draft: ProductDraft): ProductDraft {
   };
 }
 
-/** Use case: image in, validated product draft out. Provider-agnostic. */
+/** Use case: photo or video frames in, validated product draft out. Provider-agnostic. */
 export async function analyzeProductImage(
   visionModel: VisionModel,
   request: AnalyzeImageRequest,
 ): Promise<AnalyzeProductImageResult> {
   const output = await visionModel.describe({
-    base64: request.image,
-    mediaType: request.mediaType,
-    instruction: CATALOG_USER_INSTRUCTION,
+    images: request.images,
+    instruction: catalogInstruction(request.source, request.images.length),
   });
 
   const parsed = ProductDraftSchema.safeParse(extractJsonObject(output.text));

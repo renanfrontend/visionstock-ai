@@ -1,8 +1,8 @@
-import type { SupportedMediaType } from "@/core/catalog/analyze-image.contract";
+import type { ImagePart } from "@/core/catalog/analyze-image.contract";
 
 export interface VisionModelInput {
-  base64: string;
-  mediaType: SupportedMediaType;
+  /** One or more views of the same product, in order. */
+  images: readonly ImagePart[];
   instruction: string;
 }
 
@@ -13,7 +13,7 @@ export interface VisionModelOutput {
   outputTokens: number;
 }
 
-/** Port: any multimodal provider capable of answering a text instruction about one image. */
+/** Port: any multimodal provider capable of answering a text instruction about a set of images. */
 export interface VisionModel {
   readonly provider: string;
   describe(input: VisionModelInput): Promise<VisionModelOutput>;

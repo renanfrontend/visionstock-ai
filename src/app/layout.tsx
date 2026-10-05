@@ -5,7 +5,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "VisionStock AI — Cadastro de produtos por visão computacional",
+  title: "VisionStock — Catálogo, estoque e vitrine com IA",
   description:
     "Envie a foto de um produto e receba título, descrição, categoria, cores e tags de SEO prontos para revisar.",
 };
