@@ -1,5 +1,7 @@
 # VisionStock AI
 
+**Demo:** https://visionstock-ai-nine.vercel.app
+
 Prova de conceito de **AutoCatálogo Inteligente**: envie a foto de um produto e receba título, descrição, categoria, cores e tags de SEO prontos para revisão, gerados por um LLM multimodal.
 
 ## Stack
