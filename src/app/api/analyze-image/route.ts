@@ -16,10 +16,24 @@ function fail(status: number, code: AnalyzeImageErrorCode, message: string) {
   return NextResponse.json<AnalyzeImageResponse>({ ok: false, error: { code, message } }, { status });
 }
 
+/**
+ * Diagnoses a missing key without ever exposing its value: distinguishes
+ * "not defined" from "defined but empty" and reports which environment ran.
+ */
+function describeMissingKey(raw: string | undefined) {
+  const env = process.env.VERCEL_ENV ?? process.env.NODE_ENV ?? "desconhecido";
+  const state = raw === undefined ? "não está definida" : "está definida, mas vazia";
+  const related = Object.keys(process.env).filter((name) => name.includes("ANTHROPIC"));
+  console.error("[analyze-image] missing api key", { env, defined: raw !== undefined, related });
+  return `ANTHROPIC_API_KEY ${state} no ambiente "${env}".`;
+}
+
 export async function POST(request: Request) {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const rawApiKey = process.env.ANTHROPIC_API_KEY;
+  // Values pasted into dashboards often carry a trailing newline or spaces.
+  const apiKey = rawApiKey?.trim();
   if (!apiKey) {
-    return fail(500, "MISSING_API_KEY", "ANTHROPIC_API_KEY não está configurada no servidor.");
+    return fail(500, "MISSING_API_KEY", describeMissingKey(rawApiKey));
   }
 
   let body: unknown;
