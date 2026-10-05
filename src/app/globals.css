@@ -1,0 +1,146 @@
+@import "tailwindcss";
+
+/*
+ * VisionStock design tokens
+ * void   — page background, deep ink with a blue cast
+ * hull   — raised glass surfaces
+ * ice    — primary neon: idle, focus, success
+ * iris   — processing state (the model is "thinking")
+ * ember  — errors
+ */
+@theme {
+  --color-void: #04050c;
+  --color-hull: #0e1226;
+  --color-hull-strong: #161b36;
+  --color-ice: #6ee7f9;
+  --color-ice-dim: #2b7f8f;
+  --color-iris: #8b7cf6;
+  --color-ember: #fb7185;
+  --color-ink: #e7eaf6;
+  --color-ink-muted: #8a91b1;
+  --color-ink-faint: #555b7a;
+  --color-line: rgb(148 163 255 / 0.12);
+
+  --font-display: "Unbounded Variable", ui-sans-serif, system-ui;
+  --font-sans: "Manrope Variable", ui-sans-serif, system-ui;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
+
+  --animate-scan: scan 1.6s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
+  --animate-shimmer: shimmer 1.4s linear infinite;
+
+  @keyframes scan {
+    from { transform: translateY(0%); }
+    to { transform: translateY(calc(100% - 2px)); }
+  }
+  @keyframes shimmer {
+    from { background-position: -200% 0; }
+    to { background-position: 200% 0; }
+  }
+}
+
+@utility glass {
+  background:
+    linear-gradient(160deg, rgb(34 41 82 / 0.5), rgb(9 11 26 / 0.62)) padding-box;
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border: 1px solid var(--color-line);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.06),
+    0 40px 90px -50px rgb(0 0 0 / 0.9);
+}
+
+@utility field {
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-line);
+  background: rgb(6 8 20 / 0.6);
+  padding: 0.7rem 0.9rem;
+  color: var(--color-ink);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease;
+
+  &::placeholder {
+    color: var(--color-ink-faint);
+  }
+  &:hover:not(:disabled) {
+    border-color: rgb(110 231 249 / 0.28);
+  }
+  &:focus {
+    outline: none;
+    border-color: rgb(110 231 249 / 0.7);
+    box-shadow:
+      0 0 0 3px rgb(110 231 249 / 0.14),
+      0 0 24px -6px rgb(110 231 249 / 0.55);
+  }
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+}
+
+@utility skeleton {
+  background: linear-gradient(
+    90deg,
+    rgb(139 124 246 / 0.06) 0%,
+    rgb(139 124 246 / 0.22) 50%,
+    rgb(139 124 246 / 0.06) 100%
+  );
+  background-size: 200% 100%;
+  animation: var(--animate-shimmer);
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  background: var(--color-void);
+}
+
+body {
+  min-height: 100dvh;
+  background:
+    radial-gradient(60rem 40rem at 18% 22%, rgb(139 124 246 / 0.12), transparent 60%),
+    radial-gradient(50rem 36rem at 85% 70%, rgb(110 231 249 / 0.07), transparent 60%),
+    var(--color-void);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Fine blueprint grid behind everything, fading toward the edges. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgb(148 163 255 / 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(148 163 255 / 0.05) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(ellipse at 40% 35%, black 20%, transparent 75%);
+}
+
+::selection {
+  background: rgb(110 231 249 / 0.3);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-ice);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
