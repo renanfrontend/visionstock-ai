@@ -8,8 +8,23 @@ import {
 /** Stable Flash model with image input, available on the Gemini API free tier. */
 export const DEFAULT_GEMINI_MODEL = "gemini-3.6-flash";
 
+/**
+ * Free-tier capacity varies per model. When the preferred model is overloaded,
+ * the adapter walks this chain of stable, image-capable Flash models.
+ */
+const FALLBACK_MODELS = ["gemini-3.5-flash", "gemini-3.5-flash-lite", "gemini-3.1-flash-lite"] as const;
+
 const API_BASE = "https://generativelanguage.googleapis.com/v1beta";
-const TIMEOUT_MS = 45_000;
+/** Total budget stays under the route's maxDuration (60 s). */
+const TOTAL_BUDGET_MS = 52_000;
+const ATTEMPT_TIMEOUT_MS = 25_000;
+const RETRIES_PER_MODEL = 1;
+const BACKOFF_MS = 900;
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/** Failures worth retrying or routing to another model. */
+const isTransient = (error: VisionProviderError) => error.kind === "unavailable" || error.kind === "model";
 
 interface GeminiVisionAdapterOptions {
   apiKey: string;
@@ -59,7 +74,12 @@ function toProviderError(httpStatus: number, body: GeminiErrorBody | null, model
     );
   }
   if (httpStatus >= 500) {
-    return new VisionProviderError("unavailable", "O serviço do Gemini está instável no momento. Tente de novo em instantes.", 503, detail);
+    return new VisionProviderError(
+      "unavailable",
+      `O Gemini está sobrecarregado no momento (HTTP ${httpStatus}). Tente de novo em instantes.`,
+      503,
+      detail,
+    );
   }
   return new VisionProviderError(
     "unknown",
@@ -69,7 +89,7 @@ function toProviderError(httpStatus: number, body: GeminiErrorBody | null, model
   );
 }
 
-/** Thin REST adapter: no SDK dependency, one fetch per analysis. */
+/** Thin REST adapter (no SDK) with bounded retries and a model fallback chain. */
 export class GeminiVisionAdapter implements VisionModel {
   readonly provider = "gemini";
   private readonly apiKey: string;
@@ -84,11 +104,47 @@ export class GeminiVisionAdapter implements VisionModel {
     this.maxOutputTokens = maxOutputTokens;
   }
 
-  async describe({ base64, mediaType, instruction }: VisionModelInput): Promise<VisionModelOutput> {
-    const response = await fetch(`${API_BASE}/models/${encodeURIComponent(this.model)}:generateContent`, {
+  async describe(input: VisionModelInput): Promise<VisionModelOutput> {
+    const deadline = Date.now() + TOTAL_BUDGET_MS;
+    const chain = [this.model, ...FALLBACK_MODELS.filter((model) => model !== this.model)];
+    let lastError: VisionProviderError | undefined;
+
+    for (const model of chain) {
+      for (let attempt = 0; attempt <= RETRIES_PER_MODEL; attempt += 1) {
+        const remaining = deadline - Date.now();
+        if (remaining < 3_000) break;
+        try {
+          return await this.request(model, input, Math.min(ATTEMPT_TIMEOUT_MS, remaining));
+        } catch (error) {
+          if (!(error instanceof VisionProviderError) || !isTransient(error)) throw error;
+          lastError = error;
+          console.warn("[gemini] transient failure", { model, attempt, kind: error.kind, detail: error.providerDetail });
+          // A missing model will not appear on retry: move straight to the next one.
+          if (error.kind === "model") break;
+          if (attempt < RETRIES_PER_MODEL) await sleep(BACKOFF_MS * (attempt + 1));
+        }
+      }
+    }
+
+    if (!lastError) throw new VisionProviderError("unavailable", "O Gemini não respondeu a tempo. Tente de novo.", 504);
+    // Every model in the chain failed: surface the provider's own words to make diagnosis possible.
+    throw new VisionProviderError(
+      lastError.kind,
+      `${lastError.message} Modelos tentados: ${chain.join(", ")}.${lastError.providerDetail ? ` Detalhe: ${lastError.providerDetail}` : ""}`,
+      lastError.httpStatus,
+      lastError.providerDetail,
+    );
+  }
+
+  private async request(
+    model: string,
+    { base64, mediaType, instruction }: VisionModelInput,
+    timeoutMs: number,
+  ): Promise<VisionModelOutput> {
+    const response = await fetch(`${API_BASE}/models/${encodeURIComponent(model)}:generateContent`, {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-goog-api-key": this.apiKey },
-      signal: AbortSignal.timeout(TIMEOUT_MS),
+      signal: AbortSignal.timeout(timeoutMs),
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: this.systemPrompt }] },
         contents: [
@@ -114,7 +170,7 @@ export class GeminiVisionAdapter implements VisionModel {
 
     if (!response.ok) {
       const body = (await response.json().catch(() => null)) as GeminiErrorBody | null;
-      throw toProviderError(response.status, body, this.model);
+      throw toProviderError(response.status, body, model);
     }
 
     const payload = (await response.json()) as GenerateContentResponse;
@@ -135,7 +191,7 @@ export class GeminiVisionAdapter implements VisionModel {
 
     return {
       text,
-      model: payload.modelVersion ?? this.model,
+      model: payload.modelVersion ?? model,
       inputTokens: payload.usageMetadata?.promptTokenCount ?? 0,
       outputTokens: payload.usageMetadata?.candidatesTokenCount ?? 0,
     };
