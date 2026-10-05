@@ -51,7 +51,20 @@ function describeProviderError(error: InstanceType<typeof Anthropic.APIError>): 
   if (error.status === 529 || (error.status ?? 0) >= 500) {
     return { status: 503, message: "O serviço de visão está sobrecarregado no momento. Tente de novo em instantes." };
   }
-  return { status: 502, message: `O serviço de visão recusou a requisição (HTTP ${error.status ?? "?"}).` };
+  const providerMessage = extractProviderMessage(error);
+  return {
+    status: 502,
+    message: `O serviço de visão recusou a requisição (HTTP ${error.status ?? "?"})${providerMessage ? `: ${providerMessage}` : "."}`,
+  };
+}
+
+/** Reads `error.message` from the provider's JSON body ({ type, error: { type, message } }). */
+function extractProviderMessage(error: InstanceType<typeof Anthropic.APIError>): string | null {
+  const body: unknown = error.error;
+  if (typeof body !== "object" || body === null || !("error" in body)) return null;
+  const inner: unknown = body.error;
+  if (typeof inner !== "object" || inner === null || !("message" in inner)) return null;
+  return typeof inner.message === "string" ? inner.message.slice(0, 300) : null;
 }
 
 export async function POST(request: Request) {
