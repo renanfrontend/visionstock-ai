@@ -1,9 +1,11 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { Camera, Film, ImagePlus, Loader2, RotateCcw, Sparkles, X } from "lucide-react";
+import { Camera, Film, ImagePlus, Loader2, RotateCcw, ShieldAlert, Sparkles, X } from "lucide-react";
+import Link from "next/link";
 import { useCallback, useEffect, useId, useRef, useState, type DragEvent } from "react";
 import { Button } from "@/components/ui/Button";
+import { PRIVACY_PATH } from "@/features/legal/legal";
 import { CameraDialog } from "./CameraDialog";
 import { MediaValidationError } from "./lib/encode";
 import { MAX_VIDEO_SECONDS, prepareMediaFile, type PreparedMedia } from "./lib/prepare-media";
@@ -192,7 +194,7 @@ export function MediaCapture({ media, phase, onMedia, onClear, onAnalyze, onErro
               if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setDragging(false);
             }}
             onDrop={onDrop}
-            className={`relative flex aspect-[4/3] flex-col items-center justify-center gap-5 px-6 text-center transition-colors duration-300 ${
+            className={`relative flex flex-col items-center justify-center gap-5 px-6 py-10 text-center transition-colors duration-300 sm:aspect-[4/3] sm:py-0 ${
               dragging ? "marching bg-ice/[0.06]" : ""
             }`}
           >
@@ -222,6 +224,16 @@ export function MediaCapture({ media, phase, onMedia, onClear, onAnalyze, onErro
           </motion.div>
         )}
       </AnimatePresence>
+
+      <p className="flex items-start gap-2 border-t border-line px-4 py-2.5 text-[11px] leading-relaxed text-ink-faint">
+        <ShieldAlert className="mt-px size-3.5 shrink-0" aria-hidden="true" />
+        <span>
+          A imagem é enviada à Google Gemini API assim que você a escolhe. Não envie fotos de pessoas, documentos ou dados confidenciais.{" "}
+          <Link href={PRIVACY_PATH} className="text-ink-muted underline underline-offset-2 hover:text-ink">
+            Privacidade
+          </Link>
+        </span>
+      </p>
 
       <CameraDialog open={cameraOpen} onClose={() => setCameraOpen(false)} onCapture={onMedia} />
     </section>

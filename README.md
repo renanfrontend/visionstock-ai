@@ -2,6 +2,8 @@
 
 **Demo:** https://visionstock-ai-nine.vercel.app
 
+> © 2026 Renan Augusto dos Santos. **Todos os direitos reservados.** Código público apenas para avaliação de portfólio: copiar, adaptar ou reutilizar exige autorização por escrito. Veja [Licença e direitos autorais](#licença-e-direitos-autorais).
+
 Prova de conceito de um sistema de catálogo para e-commerce: da foto (ou de um vídeo curto) do produto até o estoque endereçado, a vitrine publicada e os relatórios em XML. A IA preenche o cadastro; a interface transforma o resto do fluxo em algo direto e interativo.
 
 ## O que dá para fazer
@@ -83,6 +85,33 @@ npm run dev
 
 `images` aceita de 1 a 4 itens (`source: "video"` para quadros de vídeo). A resposta traz `title`, `description`, `category`, `colors` e `seoTags`, além de modelo, latência e tokens.
 
+## Privacidade
+
+A demonstração não tem contas, cookies nem rastreamento, e o catálogo fica no navegador. As imagens enviadas para análise passam pelo servidor, sem serem gravadas, e seguem para a Gemini API na camada gratuita, cujos termos permitem ao Google usar o conteúdo para melhorar os próprios produtos. A interface avisa isso na área de envio. Política completa, conforme a LGPD: [PRIVACIDADE.md](PRIVACIDADE.md) e [/privacidade](https://visionstock-ai-nine.vercel.app/privacidade).
+
+O `robots.txt` da demo libera buscadores e pede aos crawlers de treinamento de IA que não coletem o site.
+
+## Autoria
+
+Concepção do produto, regras de negócio, arquitetura, interface, cena 3D, ilustrações, textos e vídeos de demonstração por **Renan Augusto dos Santos**. A cena 3D é gerada por código, sem modelos ou texturas de terceiros. Empresas, marcas, produtos e pessoas nos dados de demonstração são fictícios.
+
+## Licença e direitos autorais
+
+© 2026 Renan Augusto dos Santos. **Todos os direitos reservados.**
+
+Este não é um projeto open source. O código está público apenas para fins de portfólio e avaliação profissional. Sem autorização por escrito, não é permitido:
+
+- copiar, modificar, redistribuir ou usar comercialmente o projeto, no todo ou em parte;
+- reescrever o projeto em outra stack a partir deste repositório, ou reutilizar a interface, a identidade visual, a cena 3D, os textos e os vídeos;
+- apresentar o projeto, ou parte dele, como trabalho próprio em portfólios, processos seletivos ou propostas comerciais;
+- usar o conteúdo do repositório ou da demo para treinar ou avaliar modelos de IA.
+
+Os termos completos estão em [LICENSE](LICENSE). Dependências e fontes mantêm suas próprias licenças. Pedidos de autorização: [github.com/renanfrontend](https://github.com/renanfrontend). Para reportar uma vulnerabilidade, veja [SECURITY.md](SECURITY.md).
+
 ---
 
-Dados fictícios. Projeto de portfólio.
+## 🇺🇸 English
+
+VisionStock is a product catalog proof of concept by **Renan Augusto dos Santos**: a photo or a 10-second video of a product becomes a reviewed listing, an addressed bin in a 3D warehouse, a published storefront card and XML feeds. Built with Next.js 16, React 19, strict TypeScript, React Three Fiber and the Gemini API. All demo data is fictional.
+
+© 2026 Renan Augusto dos Santos. All rights reserved. This is not open source. The source is public for portfolio evaluation only; copying, modifying, porting, redistributing, commercial use, presenting it as your own work or using it to train AI models requires written permission. See [LICENSE](LICENSE). Privacy policy (Portuguese): [PRIVACIDADE.md](PRIVACIDADE.md).
