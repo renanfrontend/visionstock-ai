@@ -1,0 +1,106 @@
+Copyright (c) 2026 Renan Augusto dos Santos. Todos os direitos reservados.
+
+VisionStock — Licença proprietária
+
+Este repositório é público apenas para fins de portfólio e avaliação
+profissional. A publicação do código não concede nenhuma licença de uso.
+
+ABRANGÊNCIA
+Esta licença cobre todo o conteúdo autoral do projeto: código-fonte,
+arquitetura e organização do código, identidade visual, interface e fluxos de
+interação, cena 3D, ilustrações, textos, prompts, dados de demonstração e a
+aplicação publicada em https://visionstock-ai-nine.vercel.app. Cobre também os
+materiais de divulgação derivados do projeto, como vídeos, roteiros, capas e
+textos de publicação.
+
+É PERMITIDO, sem autorização prévia:
+  1. Visualizar o código-fonte e usar a demonstração publicada para avaliá-la.
+  2. Fazer fork pelo próprio GitHub, exclusivamente na medida exigida pelos
+     Termos de Serviço do GitHub, sem uso do conteúdo fora da plataforma.
+  3. Citar trechos curtos para fins de crítica, estudo ou notícia, com
+     indicação do autor e link para este repositório, nos limites do art. 46
+     da Lei nº 9.610/1998.
+
+NÃO É PERMITIDO, sem autorização prévia e por escrito do autor:
+  1. Copiar, reproduzir ou redistribuir o código, no todo ou em parte.
+  2. Modificar o código ou criar trabalhos derivados, inclusive reescrevendo-o
+     com outra linguagem, framework ou ferramenta a partir deste repositório.
+  3. Usar o código, a identidade visual, a interface, a cena 3D, os textos ou
+     os vídeos em produtos, serviços, sites, sistemas ou portfólios de
+     terceiros.
+  4. Apresentar o projeto, ou parte dele, como trabalho próprio ou de outra
+     pessoa, em portfólios, processos seletivos, propostas comerciais ou
+     publicações.
+  5. Usar o projeto, no todo ou em parte, para fins comerciais.
+  6. Coletar o conteúdo deste repositório ou da demonstração para treinar,
+     ajustar ou avaliar modelos de inteligência artificial, ou incluí-lo em
+     conjuntos de dados.
+  7. Sublicenciar, vender ou ceder qualquer direito sobre o projeto.
+
+Componentes de terceiros mantêm suas próprias licenças: as dependências
+listadas em `package.json` (incluindo as fontes Unbounded, Manrope e
+JetBrains Mono, sob a SIL Open Font License 1.1). Esta licença não altera
+esses termos. Os nomes de empresas, marcas e produtos usados nos dados de
+demonstração são fictícios.
+
+Pedidos de autorização: https://github.com/renanfrontend
+
+O SOFTWARE É FORNECIDO "NO ESTADO EM QUE SE ENCONTRA", SEM GARANTIAS DE
+QUALQUER TIPO. EM NENHUMA HIPÓTESE O AUTOR SERÁ RESPONSÁVEL POR DANOS
+DECORRENTES DO USO DO SOFTWARE.
+
+Esta licença é regida pelas leis da República Federativa do Brasil, em
+especial a Lei nº 9.610/1998 (Direitos Autorais) e a Lei nº 9.609/1998
+(Programas de Computador).
+
+-------------------------------------------------------------------------------
+
+English
+
+Copyright (c) 2026 Renan Augusto dos Santos. All rights reserved.
+
+VisionStock — Proprietary license
+
+This repository is public for portfolio and professional evaluation purposes
+only. Publishing the source code does not grant any license.
+
+SCOPE
+This license covers all original content of the project: source code, code
+architecture and organization, visual identity, interface and interaction
+flows, 3D scene, illustrations, copy, prompts, demo data and the application
+published at https://visionstock-ai-nine.vercel.app. It also covers promotional
+material derived from the project, such as videos, scripts, cover images and
+post copy.
+
+You MAY, without prior permission:
+  1. View the source code and use the published demo to evaluate it.
+  2. Fork it on GitHub solely to the extent required by GitHub's Terms of
+     Service, without using the content outside the platform.
+  3. Quote short excerpts for criticism, study or news reporting, crediting
+     the author and linking to this repository.
+
+You MAY NOT, without the author's prior written permission:
+  1. Copy, reproduce or redistribute the code, in whole or in part.
+  2. Modify the code or create derivative works, including rewriting it in
+     another language, framework or tool based on this repository.
+  3. Use the code, visual identity, interface, 3D scene, copy or videos in
+     third-party products, services, websites, systems or portfolios.
+  4. Present the project, or any part of it, as your own work or someone
+     else's, in portfolios, hiring processes, business proposals or
+     publications.
+  5. Use the project, in whole or in part, for commercial purposes.
+  6. Collect the content of this repository or the demo to train, fine-tune or
+     evaluate artificial intelligence models, or include it in datasets.
+  7. Sublicense, sell or transfer any rights to the project.
+
+Third-party components remain under their own licenses (see above). This
+license does not change those terms. Company, brand and product names in the
+demo data are fictional.
+
+Permission requests: https://github.com/renanfrontend
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. IN NO EVENT
+SHALL THE AUTHOR BE LIABLE FOR ANY DAMAGES ARISING FROM THE USE OF THE
+SOFTWARE.
+
+This license is governed by the laws of the Federative Republic of Brazil.

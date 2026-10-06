@@ -2,7 +2,9 @@
 
 import { motion } from "framer-motion";
 import { ChartColumn, ScanLine, Store, Warehouse, type LucideIcon } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useMemo, type ReactNode } from "react";
+import { COPYRIGHT_NOTICE, PRIVACY_PATH, REPOSITORY_URL } from "@/features/legal/legal";
 import { useCatalog } from "./CatalogProvider";
 import { useNavigation, VIEWS, type ViewId } from "./navigation";
 
@@ -112,8 +114,17 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <main className="flex-1">{children}</main>
 
-      <footer className="mt-10 text-xs text-ink-faint">
-        Prova de conceito com dados fictícios. O catálogo fica salvo neste navegador.
+      <footer className="mt-10 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-line pt-4 text-xs text-ink-faint">
+        <p>Prova de conceito com dados fictícios. O catálogo fica salvo neste navegador.</p>
+        <p className="sm:ml-auto">{COPYRIGHT_NOTICE}</p>
+        <nav aria-label="Informações legais" className="flex gap-4">
+          <Link href={PRIVACY_PATH} className="hover:text-ink">
+            Privacidade
+          </Link>
+          <a href={`${REPOSITORY_URL}/blob/main/LICENSE`} className="hover:text-ink" rel="noopener noreferrer">
+            Licença
+          </a>
+        </nav>
       </footer>
     </div>
   );
