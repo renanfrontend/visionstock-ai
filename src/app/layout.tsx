@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   title: "VisionStock — Catálogo, estoque e vitrine com IA",
   description:
     "Envie a foto de um produto e receba título, descrição, categoria, cores e tags de SEO prontos para revisar.",
-  authors: [{ name: AUTHOR.name, url: AUTHOR.profileUrl }],
+  authors: [{ name: AUTHOR.name, url: AUTHOR.siteUrl }],
   creator: AUTHOR.name,
   publisher: AUTHOR.name,
 };

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "license": "SEE LICENSE IN LICENSE",
-  "author": "Renan Augusto dos Santos (https://github.com/renanfrontend)",
+  "author": "Renan Augusto dos Santos <contato@renanaugusto.com.br> (https://renanaugusto.com.br)",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

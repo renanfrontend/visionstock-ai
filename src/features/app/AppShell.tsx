@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { ChartColumn, ScanLine, Store, Warehouse, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, type ReactNode } from "react";
-import { COPYRIGHT_NOTICE, PRIVACY_PATH, REPOSITORY_URL } from "@/features/legal/legal";
+import { AUTHOR, COPYRIGHT_NOTICE, PRIVACY_PATH, REPOSITORY_URL } from "@/features/legal/legal";
 import { useCatalog } from "./CatalogProvider";
 import { useNavigation, VIEWS, type ViewId } from "./navigation";
 
@@ -117,12 +117,18 @@ export function AppShell({ children }: { children: ReactNode }) {
       <footer className="mt-10 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-line pt-4 text-xs text-ink-faint">
         <p>Prova de conceito com dados fictícios. O catálogo fica salvo neste navegador.</p>
         <p className="sm:ml-auto">{COPYRIGHT_NOTICE}</p>
-        <nav aria-label="Informações legais" className="flex gap-4">
+        <nav aria-label="Informações legais" className="flex flex-wrap gap-x-4 gap-y-1">
           <Link href={PRIVACY_PATH} className="hover:text-ink">
             Privacidade
           </Link>
           <a href={`${REPOSITORY_URL}/blob/main/LICENSE`} className="hover:text-ink" rel="noopener noreferrer">
             Licença
+          </a>
+          <a href={AUTHOR.siteUrl} className="hover:text-ink" rel="noopener">
+            Site
+          </a>
+          <a href={`mailto:${AUTHOR.email}`} className="hover:text-ink">
+            Contato
           </a>
         </nav>
       </footer>

@@ -94,7 +94,7 @@ export default function PrivacyPage() {
         <Section id="responsavel" title="Quem é o responsável">
           <p>
             {AUTHOR.name}, autor do projeto, é o controlador dos dados tratados pela demonstração, nos termos da Lei Geral de Proteção de Dados
-            (Lei nº 13.709/2018). Contato pelos canais indicados em <ExternalLink href={AUTHOR.profileUrl}>github.com/renanfrontend</ExternalLink>.
+            (Lei nº 13.709/2018). Contato: <ExternalLink href={`mailto:${AUTHOR.email}`}>{AUTHOR.email}</ExternalLink>.
           </p>
           <p>O VisionStock é uma prova de conceito para portfólio, com dados fictícios, destinada ao público no Brasil.</p>
         </Section>
