@@ -93,7 +93,7 @@ O `robots.txt` da demo libera buscadores e pede aos crawlers de treinamento de I
 
 ## Autoria
 
-Concepção do produto, regras de negócio, arquitetura, interface, cena 3D, ilustrações, textos e vídeos de demonstração por **Renan Augusto dos Santos**. A cena 3D é gerada por código, sem modelos ou texturas de terceiros. Empresas, marcas, produtos e pessoas nos dados de demonstração são fictícios.
+Concepção do produto, regras de negócio, arquitetura, interface, cena 3D, ilustrações, textos e vídeos de demonstração por **Renan Augusto dos Santos** ([renanaugusto.com.br](https://renanaugusto.com.br) · [contato@renanaugusto.com.br](mailto:contato@renanaugusto.com.br)). A cena 3D é gerada por código, sem modelos ou texturas de terceiros. Empresas, marcas, produtos e pessoas nos dados de demonstração são fictícios.
 
 ## Licença e direitos autorais
 
@@ -106,7 +106,7 @@ Este não é um projeto open source. O código está público apenas para fins d
 - apresentar o projeto, ou parte dele, como trabalho próprio em portfólios, processos seletivos ou propostas comerciais;
 - usar o conteúdo do repositório ou da demo para treinar ou avaliar modelos de IA.
 
-Os termos completos estão em [LICENSE](LICENSE). Dependências e fontes mantêm suas próprias licenças. Pedidos de autorização: [github.com/renanfrontend](https://github.com/renanfrontend). Para reportar uma vulnerabilidade, veja [SECURITY.md](SECURITY.md).
+Os termos completos estão em [LICENSE](LICENSE). Dependências e fontes mantêm suas próprias licenças. Pedidos de autorização: [contato@renanaugusto.com.br](mailto:contato@renanaugusto.com.br). Para reportar uma vulnerabilidade, veja [SECURITY.md](SECURITY.md).
 
 ---
 
@@ -114,4 +114,4 @@ Os termos completos estão em [LICENSE](LICENSE). Dependências e fontes mantêm
 
 VisionStock is a product catalog proof of concept by **Renan Augusto dos Santos**: a photo or a 10-second video of a product becomes a reviewed listing, an addressed bin in a 3D warehouse, a published storefront card and XML feeds. Built with Next.js 16, React 19, strict TypeScript, React Three Fiber and the Gemini API. All demo data is fictional.
 
-© 2026 Renan Augusto dos Santos. All rights reserved. This is not open source. The source is public for portfolio evaluation only; copying, modifying, porting, redistributing, commercial use, presenting it as your own work or using it to train AI models requires written permission. See [LICENSE](LICENSE). Privacy policy (Portuguese): [PRIVACIDADE.md](PRIVACIDADE.md).
+© 2026 Renan Augusto dos Santos. All rights reserved. This is not open source. The source is public for portfolio evaluation only; copying, modifying, porting, redistributing, commercial use, presenting it as your own work or using it to train AI models requires written permission. See [LICENSE](LICENSE). Contact: [contato@renanaugusto.com.br](mailto:contato@renanaugusto.com.br) · [renanaugusto.com.br](https://renanaugusto.com.br). Privacy policy (Portuguese): [PRIVACIDADE.md](PRIVACIDADE.md).

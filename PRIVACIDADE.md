@@ -1,12 +1,12 @@
 # Privacidade
 
-Atualizada em 5 de outubro de 2026. Versão publicada: https://visionstock-ai-nine.vercel.app/privacidade
+Atualizada em 7 de outubro de 2026. Versão publicada: https://visionstock-ai-nine.vercel.app/privacidade
 
 A demonstração não tem contas, cookies nem rastreamento. O catálogo fica no seu navegador. Só as imagens que você envia para análise saem dele, e elas vão para a Google Gemini API. Não envie fotos de pessoas, documentos ou informações confidenciais.
 
 ## Quem é o responsável
 
-Renan Augusto dos Santos, autor do projeto, é o controlador dos dados tratados pela demonstração, nos termos da Lei Geral de Proteção de Dados (Lei nº 13.709/2018). Contato pelos canais indicados em [github.com/renanfrontend](https://github.com/renanfrontend).
+Renan Augusto dos Santos, autor do projeto, é o controlador dos dados tratados pela demonstração, nos termos da Lei Geral de Proteção de Dados (Lei nº 13.709/2018). Contato: [contato@renanaugusto.com.br](mailto:contato@renanaugusto.com.br).
 
 O VisionStock é uma prova de conceito para portfólio, com dados fictícios, destinada ao público no Brasil.
 
