@@ -1,8 +1,12 @@
 # VisionStock
 
+[![CI](https://github.com/renanfrontend/visionstock-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/renanfrontend/visionstock-ai/actions/workflows/ci.yml)
+
 **Demo:** https://visionstock-ai-nine.vercel.app
 
 > © 2026 Renan Augusto dos Santos. **Todos os direitos reservados.** Código público apenas para avaliação de portfólio: copiar, adaptar ou reutilizar exige autorização por escrito. Veja [Licença e direitos autorais](#licença-e-direitos-autorais).
+
+![Tela de cadastro do VisionStock com área para enviar foto ou vídeo do produto e formulário preenchido pela IA](docs/screenshot.png)
 
 Prova de conceito de um sistema de catálogo para e-commerce: da foto (ou de um vídeo curto) do produto até o estoque endereçado, a vitrine publicada e os relatórios em XML. A IA preenche o cadastro; a interface transforma o resto do fluxo em algo direto e interativo.
 
